@@ -67,14 +67,14 @@ void main()
 	int num1, num2;
 	int a=0;
 	srand(time(NULL)); //랜덤함수를 쓰겟다고 호출
-	while (a < 10) 
+	while (a < 10)  //10번 출력
 	{
 		num1 = rand() % 4;
 		num2 = rand() % 13;
 		hole(num1,num2);
 		printf("\n\n");
 		hole1();
-		a++;
+		a++; 
 	}
 	
 }
