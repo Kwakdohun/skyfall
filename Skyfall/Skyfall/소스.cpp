@@ -20,7 +20,7 @@ int turn = 0; //카드 패 몇장돌아갔는지
 int concept = 0; // 승리 조건
 int x = 3, y = 1,sum1 = 0, sum2 = 0; //x,y = (3,1)로 초기화 , 딜러,유저 합을 0으로 초기화
 int getA1=0, getA2=0; //딜러가 A를 갖고 있느냐 ,유저가 딜러가 A를 갖고 있느냐
-int hidesuit,hidenum;
+int hidesuit,hidenum; // 딜러의 첫카드에 정보를 담음
 void gotoxy(int x, int y) //지정 x,y 로 커서를 움직이는 함수 
 {
 	COORD pos = { x, y };
@@ -42,7 +42,7 @@ void frontground(int x, int y)
 	}
 	gotoxy(x, y + 5);
 	printf("┗━━━━━┛\n");
-	Sleep(10);
+	Sleep(10); // n/1000 만큼 딜레이
 }
 void suits(int *num,int info) //모양을 뽑겟다.
 {
@@ -61,7 +61,7 @@ void selection(int *num1, int *num2, int info)
 			if (card[*num1][*num2] == 0) //이미뽑은카드를뽑을시다시랜덤함수를돌린다.
 			{
 				*num1 = rand() % 4;
-				*num1 = rand() % 13;
+				*num2 = rand() % 13;
 			}
 			else{
 				if (card[*num1][*num2] == 65){
@@ -89,7 +89,7 @@ void selection(int *num1, int *num2, int info)
 			if (card[*num1][*num2] == 0) //이미뽑은카드를뽑을시다시랜덤함수를돌린다.
 			{
 				*num1 = rand() % 4;
-				*num1 = rand() % 13;
+				*num2 = rand() % 13;
 			}
 			else{
 				if (card[*num1][*num2] == 65){
@@ -187,13 +187,16 @@ void win(int sum1, int sum2, char stop)  // 승리 조건 (딜러합,유저합, Y or N)
 		gotoxy(30, 9);
 		printf("user 승리");
 		hideoff();
-		concept = 1;
 		gotoxy(1, 19);
 		printf("                                            ");
+		concept = 1;
 	}
 	if (sum1 > 21){
-		if (getA1 == 1)
+		if (getA1 == 1){
 			sum1=sum1 - 10;
+			gotoxy(2, 1);
+			printf("딜러 합 : %d",sum1);
+		}
 		else{
 			gotoxy(30, 9);
 			printf("user 승리");
@@ -204,8 +207,11 @@ void win(int sum1, int sum2, char stop)  // 승리 조건 (딜러합,유저합, Y or N)
 		}
 	}
 	else if (sum2 > 21){
-		if (getA2 == 1)
+		if (getA2 == 1){
 			sum2 = sum2 - 10;
+			gotoxy(2, 17);
+			printf("유저 합 : %d\n", sum2);
+		}
 		else{
 			gotoxy(30, 9);
 			printf("dearler 승리");
@@ -217,7 +223,6 @@ void win(int sum1, int sum2, char stop)  // 승리 조건 (딜러합,유저합, Y or N)
 	}
 	
 	if (!(stop - 110) || !(stop - 78)){ // N 이나 n 을 쳤을 경우
-
 		if (sum1 == sum2)	{
 			gotoxy(30, 9);
 			printf("비기심 ");
@@ -231,6 +236,7 @@ void win(int sum1, int sum2, char stop)  // 승리 조건 (딜러합,유저합, Y or N)
 			{
 				int one, two;
 				one = rand() % 4;
+				Sleep(100);
 				two = rand() % 13;
 				x = 43;
 				y = 1;
@@ -289,6 +295,7 @@ void main()
 		background();
 		for (i = 0; i < 2; i++){ // 딜러 처음 2장 뽑기
 			a = rand() % 4;
+			Sleep(100);
 			b = rand() % 13;
 			selection(&a, &b, 0);
 			Sleep(10);
@@ -301,6 +308,8 @@ void main()
 			y = 1;
 			turn++;
 		}
+		if (sum1 == 22)
+			sum1 = sum1 - 20;
 		gotoxy(2, 1);
 		printf("딜러 합 : ? ");
 		turn = 0; //유저 패로 전환하기 위해 초기화
@@ -308,6 +317,7 @@ void main()
 		y = 9; //  위치 지정
 		for (j = 0; j < 2; j++){ // 유저 처음 2장 뽑기
 			a = rand() % 4;
+			Sleep(100);
 			b = rand() % 13;
 			selection(&a, &b, 1);
 			Sleep(10);
@@ -320,8 +330,11 @@ void main()
 			y = 9;
 			turn++;
 		}
+		if (sum2 == 22)
+			sum2 = sum2 - 20;
 		gotoxy(2, 17);
 		printf("유저 합 : %d\n", sum2);
+
 		do{
 			gotoxy(1, 19);
 			printf("패를 더 받으겠습니까?('Y' OR 'N')");
@@ -333,6 +346,7 @@ void main()
 
 			if (sure == 'Y' || sure == 'y'){ // 유저 카드패 더 받기 
 				a = rand() % 4;
+				Sleep(100);
 				b = rand() % 13;
 				selection(&a, &b, 1);
 				suits(&a, 1);
@@ -352,11 +366,12 @@ void main()
 				break;
 			}
 		} while ((sure - 110) && (sure - 78));
-		printf("\n");
+
 		gotoxy(1, 19);
 		printf("  그만하시겠습니까(Y or N) : ");
 		scanf("%c", &sure);
 		fflush(stdin); //버퍼 지우기
+
 		if (sure == 'N' || sure == 'n'){
 			Sleep(2000);
 			system("cls");
@@ -366,10 +381,21 @@ void main()
 			turn = 0, concept = 0;
 			x = 3, y = 1, sum1 = 0, sum2 = 0;
 			getA1 = 0, getA2 = 0, hidesuit = 0, hidenum = 0;
-			int card[4][13] = { { 'A', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K' },
-			{ 'A', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K' },
-			{ 'A', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K' },
-			{ 'A', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K' } };
+			for (int mem = 0; mem < 4; mem++){
+				for (int mem1 = 0; mem1 < 13; mem1++){
+					if (mem1 == 0)
+						card[mem][mem1] = 'A';
+					else if (mem1 == 10)
+						card[mem][mem1] = 'J';
+					else if (mem1 == 11)
+						card[mem][mem1] = 'Q';
+					else if (mem1 == 12)
+						card[mem][mem1] = 'K';
+					else
+						card[mem][mem1] = mem1 + 1;
+				}
+			}
 		}
 	} while ((sure == 'N' || sure == 'n'));
+
 }
